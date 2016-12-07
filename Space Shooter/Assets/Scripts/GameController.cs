@@ -14,10 +14,14 @@ public class GameController : MonoBehaviour
 	public GUIText scoreText;
 	public GUIText restartText;
 	public GUIText gameOverText;
+	public GUIText levelText;
 
 	private bool gameOver;
 	private bool restart;
 	private int score;
+	private int level;
+	private int levelCounter;
+	private int astCounter;
 
 	void Start ()
 	{
@@ -26,7 +30,11 @@ public class GameController : MonoBehaviour
 		restartText.text = "";
 		gameOverText.text = "";
 		score = 0;
+		level = 0;
+		levelCounter = 0;
+		astCounter = 0;
 		UpdateScore ();
+		UpdateLevel ();
 		StartCoroutine (SpawnWaves ());
 	}
 
@@ -51,8 +59,12 @@ public class GameController : MonoBehaviour
 				Vector3 spawnPosition = new Vector3 (Random.Range (-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
 				Quaternion spawnRotation = Quaternion.identity;
 				Instantiate (hazard, spawnPosition, spawnRotation);
+				astCounter = astCounter + 1;
 				yield return new WaitForSeconds (spawnWait);
 			}
+			UpdateLevel ();
+			astCounter = 0;
+			levelCounter = 0;
 			yield return new WaitForSeconds (waveWait);
 
 			if (gameOver)
@@ -67,12 +79,21 @@ public class GameController : MonoBehaviour
 	public void AddScore (int newScoreValue)
 	{
 		score += newScoreValue;
+		levelCounter = levelCounter + 1;
 		UpdateScore ();
 	}
 
 	void UpdateScore ()
 	{
 		scoreText.text = "Score: " + score;
+	}
+
+	void UpdateLevel ()
+	{
+		if ((levelCounter + 1) >= astCounter) {
+			level = level + 1;
+		}
+		levelText.text = "Level: " + level;
 	}
 
 	public void GameOver ()
